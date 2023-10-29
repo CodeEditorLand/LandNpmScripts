@@ -1,17 +1,8 @@
 {
   "name": "vscode-npm-script-test-include-directories",
   "version": "0.0.1",
+  "private": "false",
   "description": "Testing npm.includeDirectories part 1",
-  "scripts": {
-    "testA": "npm config get tag",
-    "lintA": "echo lint",
-    "folder1-shellA": "npm config get shell",
-    "postinstall": "echo test-includeDirectories",
-    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts"
-  },
-  "dependencies": {
-    "chalk": "5.3.0"
-  },
   "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
   "bugs": {
     "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
@@ -21,17 +12,27 @@
     "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
   },
   "license": "MIT",
-  "type": "module",
-  "private": "false",
-  "publishConfig": {
-    "access": "public"
-  },
   "author": {
     "name": "Nikola Hristov",
     "email": "nikola@nikolahristov.tech",
     "url": "https://nikolahristov.tech"
   },
+  "publisher": "playform",
+  "type": "module",
+  "scripts": {
+    "folder1-shellA": "npm config get shell",
+    "postinstall": "echo test-includeDirectories",
+    "lintA": "echo lint",
+    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts",
+    "testA": "npm config get tag"
+  },
+  "dependencies": {
+    "chalk": "5.3.0"
+  },
   "devDependencies": {
     "typescript-esbuild": "0.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

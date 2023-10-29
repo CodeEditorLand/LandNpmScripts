@@ -1,9 +1,33 @@
 {
-	"name": "vscode-npm-script-test-include-directories",
-	"description": "Testing npm.includeDirectories part 2",
-	"scripts": {
-		"test": "npm config get node-version",
-		"folder1-shell": "npm config get editor",
-		"postinstall": "echo test-includeDirectories/folder2"
-	}
+  "name": "vscode-npm-script-test-include-directories",
+  "description": "Testing npm.includeDirectories part 2",
+  "scripts": {
+    "test": "npm config get node-version",
+    "folder1-shell": "npm config get editor",
+    "postinstall": "echo test-includeDirectories/folder2",
+    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts"
+  },
+  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
+  "bugs": {
+    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
+  },
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "private": "false",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Nikola Hristov",
+    "email": "nikola@nikolahristov.tech",
+    "url": "https://nikolahristov.tech"
+  },
+  "devDependencies": {
+    "typescript-esbuild": "0.3.1"
+  }
 }

@@ -1,14 +1,37 @@
 {
 	"name": "vscode-npm-script-test-include-directories",
-	"version": "1.0.0",
+	"version": "0.0.1",
+	"private": false,
 	"description": "Testing npm.includeDirectories part 1",
+	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"bugs": {
+		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Playform",
+		"email": "Hello@Playform.Cloud",
+		"url": "https://playform.cloud"
+	},
+	"type": "module",
 	"scripts": {
-		"testA": "npm config get tag",
-		"lintA": "echo lint",
 		"folder1-shellA": "npm config get shell",
-		"postinstall": "echo test-includeDirectories"
+		"postinstall": "echo test-includeDirectories",
+		"lintA": "echo lint",
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"testA": "npm config get tag"
 	},
 	"dependencies": {
 		"chalk": "^2.4.1"
+	},
+	"devDependencies": {
+		"typescript-esbuild": "latest"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }

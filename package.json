@@ -1,30 +1,26 @@
 {
-	"name": "vscode-npm-script",
-	"displayName": "npm",
-	"version": "0.0.1",
-	"private": false,
-	"description": "npm support for VS Code",
-	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
-	"bugs": {
-		"url": "https://github.com/CodeEditorLand/Foundation/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "Playform",
-		"email": "Hello@Playform.Cloud",
-		"url": "https://playform.cloud"
-	},
-	"type": "module",
-	"main": "./dist/extension",
-	"scripts": {
-		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
-		"vscode:prepublish": "webpack --mode production",
-		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch"
+	"activationEvents": [
+		"onCommand:npm-script.showKeybindingsChangedWarning",
+		"onCommand:npm-script.install",
+		"onCommand:npm-script.run",
+		"onCommand:npm-script.showOutput",
+		"onCommand:npm-script.rerun-last-script",
+		"onCommand:npm-script.terminate-script",
+		"onCommand:npm-script.test",
+		"onCommand:npm-script.start",
+		"onCommand:npm-script.audit",
+		"onCommand:npm-script.outdated",
+		"onCommand:npm-script.init"
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"description": "The extension requires workspace trust because it runs npm scripts from the workspace.",
+			"supported": false
+		},
+		"virtualWorkspaces": {
+			"description": "Npm scripts running is not possible in virtual workspaces.",
+			"supported": false
+		}
 	},
 	"contributes": {
 		"commands": [
@@ -228,24 +224,12 @@
 			]
 		}
 	},
-	"activationEvents": [
-		"onCommand:npm-script.showKeybindingsChangedWarning",
-		"onCommand:npm-script.install",
-		"onCommand:npm-script.run",
-		"onCommand:npm-script.showOutput",
-		"onCommand:npm-script.rerun-last-script",
-		"onCommand:npm-script.terminate-script",
-		"onCommand:npm-script.test",
-		"onCommand:npm-script.start",
-		"onCommand:npm-script.audit",
-		"onCommand:npm-script.outdated",
-		"onCommand:npm-script.init"
-	],
 	"dependencies": {
 		"jsonc-parser": "^2.1.0",
 		"run-in-terminal": "^0.0.2",
 		"tree-kill": "^1.2.2"
 	},
+	"description": "npm support for VS Code",
 	"devDependencies": {
 		"@types/mocha": "^2.2.32",
 		"@types/node": "^7.0.43",
@@ -257,18 +241,15 @@
 		"webpack": "^5.58.2",
 		"webpack-cli": "^4.9.1"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
+	"displayName": "npm",
 	"icon": "npm_icon.png",
-	"capabilities": {
-		"untrustedWorkspaces": {
-			"description": "The extension requires workspace trust because it runs npm scripts from the workspace.",
-			"supported": false
-		},
-		"virtualWorkspaces": {
-			"description": "Npm scripts running is not possible in virtual workspaces.",
-			"supported": false
-		}
-	}
+	"main": "./dist/extension",
+	"name": "vscode-npm-script",
+	"scripts": {
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch"
+	},
+	"type": "module"
 }

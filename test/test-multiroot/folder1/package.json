@@ -9,6 +9,6 @@
 		"postinstall": "echo folder1"
 	},
 	"dependencies": {
-		"chalk": "^2.4.1"
+		"chalk": "5.3.0"
 	}
 }

@@ -1,0 +1,14 @@
+{
+	"name": "vscode-npm-script-test-include-directories",
+	"version": "1.0.0",
+	"description": "Testing npm.includeDirectories part 1",
+	"scripts": {
+		"test": "npm config get tag",
+		"lint": "echo lint",
+		"folder1-shell": "npm config get shell",
+		"postinstall": "echo folder1"
+	},
+	"dependencies": {
+		"chalk": "^2.4.1"
+	}
+}

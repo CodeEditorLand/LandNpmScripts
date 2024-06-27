@@ -223,12 +223,12 @@
 		"onCommand:npm-script.init"
 	],
 	"dependencies": {
-		"jsonc-parser": "3.3.0",
+		"jsonc-parser": "3.3.1",
 		"run-in-terminal": "0.0.3",
 		"tree-kill": "1.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "20.14.8",
+		"@types/node": "20.14.9",
 		"ts-loader": "9.5.1"
 	},
 	"icon": "npm_icon.png",

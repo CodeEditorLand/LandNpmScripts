@@ -1,14 +1,23 @@
-import * as cp from 'child_process';
-import * as path from 'path';
-import * as fs from 'fs';
+import * as cp from "child_process";
+import * as path from "path";
+import * as fs from "fs";
 
 import {
-	window, commands, workspace, OutputChannel, ExtensionContext, ViewColumn,
-	QuickPickItem, Terminal, Uri, ConfigurationTarget, env
-} from 'vscode';
+	window,
+	commands,
+	workspace,
+	OutputChannel,
+	ExtensionContext,
+	ViewColumn,
+	QuickPickItem,
+	Terminal,
+	Uri,
+	ConfigurationTarget,
+	env,
+} from "vscode";
 
-import { runInTerminal } from 'run-in-terminal';
-import { kill } from 'tree-kill';
+import { runInTerminal } from "run-in-terminal";
+import { kill } from "tree-kill";
 
 interface Script extends QuickPickItem {
 	scriptName: string;
@@ -22,7 +31,11 @@ interface Process {
 }
 
 class ProcessItem implements QuickPickItem {
-	constructor(public label: string, public description: string, public pid: number) { }
+	constructor(
+		public label: string,
+		public description: string,
+		public pid: number,
+	) {}
 }
 
 interface ScriptCommandDescription {
@@ -45,7 +58,7 @@ let lastScript: Script | null = null;
 export function activate(context: ExtensionContext) {
 	registerCommands(context);
 
-	outputChannel = window.createOutputChannel('npm');
+	outputChannel = window.createOutputChannel("npm");
 	context.subscriptions.push(outputChannel);
 
 	window.onDidCloseTerminal((closedTerminal) => {
@@ -53,7 +66,6 @@ export function activate(context: ExtensionContext) {
 			terminal = null;
 		}
 	});
-
 }
 
 export function deactivate() {
@@ -67,43 +79,78 @@ function registerCommands(context: ExtensionContext) {
 		const configuration = workspace.getConfiguration();
 
 		// this should not happen since the command should only be available when the setting is false
-		if (configuration.get<boolean>("npm.keybindingsChangedWarningShown", false)) {
+		if (
+			configuration.get<boolean>(
+				"npm.keybindingsChangedWarningShown",
+				false,
+			)
+		) {
 			return;
-		};
-		const learnMore = "Learn More";
-		const result = await window.showInformationMessage("The key bindings of the 'npm-scripts' extension have changed!", { 'modal': true}, learnMore);
-		if (result === learnMore) {
-			env.openExternal(Uri.parse('https://github.com/microsoft/vscode-npm-scripts#keyboard-shortcuts'));
 		}
-		await configuration.update('npm.keybindingsChangedWarningShown', true, ConfigurationTarget.Global);
+		const learnMore = "Learn More";
+		const result = await window.showInformationMessage(
+			"The key bindings of the 'npm-scripts' extension have changed!",
+			{ "modal": true },
+			learnMore,
+		);
+		if (result === learnMore) {
+			env.openExternal(
+				Uri.parse(
+					"https://github.com/microsoft/vscode-npm-scripts#keyboard-shortcuts",
+				),
+			);
+		}
+		await configuration.update(
+			"npm.keybindingsChangedWarningShown",
+			true,
+			ConfigurationTarget.Global,
+		);
 	}
 
 	context.subscriptions.push(
-		commands.registerCommand('npm-script.install', runNpmInstall),
-		commands.registerCommand('npm-script.init', runNpmInit),
-		commands.registerCommand('npm-script.test', runNpmTest),
-		commands.registerCommand('npm-script.start', runNpmStart),
-		commands.registerCommand('npm-script.run', runNpmScript),
-		commands.registerCommand('npm-script.showOutput', showNpmOutput),
-		commands.registerCommand('npm-script.rerun-last-script', rerunLastScript),
-		commands.registerCommand('npm-script.build', runNpmBuild),
-		commands.registerCommand('npm-script.audit', runNpmAudit),
-		commands.registerCommand('npm-script.outdated', runNpmOutdated),
-		commands.registerCommand('npm-script.installInOutputWindow', runNpmInstallInOutputWindow),
-		commands.registerCommand('npm-script.uninstallInOutputWindow', runNpmUninstallInOutputWindow),
-		commands.registerCommand('npm-script.terminate-script', terminateScript),
-		commands.registerCommand('npm-script.showKeybindingsChangedWarning', showKeybindingsChangedWarning)
+		commands.registerCommand("npm-script.install", runNpmInstall),
+		commands.registerCommand("npm-script.init", runNpmInit),
+		commands.registerCommand("npm-script.test", runNpmTest),
+		commands.registerCommand("npm-script.start", runNpmStart),
+		commands.registerCommand("npm-script.run", runNpmScript),
+		commands.registerCommand("npm-script.showOutput", showNpmOutput),
+		commands.registerCommand(
+			"npm-script.rerun-last-script",
+			rerunLastScript,
+		),
+		commands.registerCommand("npm-script.build", runNpmBuild),
+		commands.registerCommand("npm-script.audit", runNpmAudit),
+		commands.registerCommand("npm-script.outdated", runNpmOutdated),
+		commands.registerCommand(
+			"npm-script.installInOutputWindow",
+			runNpmInstallInOutputWindow,
+		),
+		commands.registerCommand(
+			"npm-script.uninstallInOutputWindow",
+			runNpmUninstallInOutputWindow,
+		),
+		commands.registerCommand(
+			"npm-script.terminate-script",
+			terminateScript,
+		),
+		commands.registerCommand(
+			"npm-script.showKeybindingsChangedWarning",
+			showKeybindingsChangedWarning,
+		),
 	);
 }
 
-function runNpmCommand(args: string[], cwd: string | undefined, alwaysRunInputWindow = false): void {
+function runNpmCommand(
+	args: string[],
+	cwd: string | undefined,
+	alwaysRunInputWindow = false,
+): void {
 	if (runSilent()) {
-		args.push('--silent');
+		args.push("--silent");
 	}
 	workspace.saveAll().then(() => {
-
 		if (useTerminal() && !alwaysRunInputWindow) {
-			if (typeof window.createTerminal === 'function') {
+			if (typeof window.createTerminal === "function") {
 				runCommandInIntegratedTerminal(args, cwd);
 			} else {
 				runCommandInTerminal(args, cwd);
@@ -115,10 +162,16 @@ function runNpmCommand(args: string[], cwd: string | undefined, alwaysRunInputWi
 	});
 }
 
-function createAllCommand(scriptList: Script[], isScriptCommand: boolean): Script {
+function createAllCommand(
+	scriptList: Script[],
+	isScriptCommand: boolean,
+): Script {
 	return {
 		label: "All",
-		description: "Run all " + (isScriptCommand ? "scripts" : "commands") + " listed below",
+		description:
+			"Run all " +
+			(isScriptCommand ? "scripts" : "commands") +
+			" listed below",
 		scriptName: "Dummy",
 		cwd: undefined,
 		execute(this: Script) {
@@ -128,7 +181,7 @@ function createAllCommand(scriptList: Script[], isScriptCommand: boolean): Scrip
 					s.execute();
 				}
 			}
-		}
+		},
 	};
 }
 
@@ -139,9 +192,14 @@ function isMultiRoot(): boolean {
 	return false;
 }
 
-function pickScriptToExecute(descriptions: ScriptCommandDescription[], command: string[], allowAll = false, alwaysRunInputWindow = false) {
+function pickScriptToExecute(
+	descriptions: ScriptCommandDescription[],
+	command: string[],
+	allowAll = false,
+	alwaysRunInputWindow = false,
+) {
 	const scriptList: Script[] = [];
-	const isScriptCommand = command[0] === 'run-script';
+	const isScriptCommand = command[0] === "run-script";
 
 	if (allowAll && descriptions.length > 1) {
 		scriptList.push(createAllCommand(scriptList, isScriptCommand));
@@ -176,7 +234,7 @@ function pickScriptToExecute(descriptions: ScriptCommandDescription[], command: 
 					cmd.push(script);
 				}
 				runNpmCommand(cmd, this.cwd, alwaysRunInputWindow);
-			}
+			},
 		});
 	}
 
@@ -185,13 +243,17 @@ function pickScriptToExecute(descriptions: ScriptCommandDescription[], command: 
 		return;
 	} else if (scriptList.length === 0) {
 		if (isScriptCommand) {
-			window.showErrorMessage(`Failed to find script with "${command[1]}" command`);
+			window.showErrorMessage(
+				`Failed to find script with "${command[1]}" command`,
+			);
 		} else {
-			window.showErrorMessage(`Failed to find handler for "${command[0]}" command`);
+			window.showErrorMessage(
+				`Failed to find handler for "${command[0]}" command`,
+			);
 		}
 		return;
 	}
-	window.showQuickPick(scriptList).then(script => {
+	window.showQuickPick(scriptList).then((script) => {
 		if (script) {
 			script.execute();
 		}
@@ -205,7 +267,12 @@ function pickScriptToExecute(descriptions: ScriptCommandDescription[], command: 
   * @param dirs Array of directories used to determine locations for running the command.
         When no argument is passed then `getIncludedDirectories` is used to get list of directories.
   */
-function runNpmCommandInPackages(command: string[], allowAll = false, alwaysRunInputWindow = false, dirs?: string[]) {
+function runNpmCommandInPackages(
+	command: string[],
+	allowAll = false,
+	alwaysRunInputWindow = false,
+	dirs?: string[],
+) {
 	const descriptions = commandsDescriptions(command, dirs);
 	if (descriptions.length === 0) {
 		window.showErrorMessage("No scripts found.", { modal: true });
@@ -215,8 +282,8 @@ function runNpmCommandInPackages(command: string[], allowAll = false, alwaysRunI
 }
 
 /**
-  * The first argument in `args` must be the path to the directory where the command will be executed.
-  */
+ * The first argument in `args` must be the path to the directory where the command will be executed.
+ */
 function runNpmCommandWithArguments(cmd: string, args: string[]) {
 	const [dir, ...args1] = args;
 	runNpmCommand([cmd, ...args1], dir);
@@ -230,43 +297,43 @@ function runNpmInstall(arg: CommandArgument) {
 	} else {
 		dirs = getAllIncludedDirectories();
 	}
-	runNpmCommandInPackages(['install'], true, false, dirs);
+	runNpmCommandInPackages(["install"], true, false, dirs);
 }
 
 function runNpmInstallInOutputWindow(...args: string[]) {
-	runNpmCommandWithArguments('install', args);
+	runNpmCommandWithArguments("install", args);
 }
 
 function runNpmUninstallInOutputWindow(...args: string[]) {
-	runNpmCommandWithArguments('uninstall', args);
+	runNpmCommandWithArguments("uninstall", args);
 }
 
 function runNpmTest() {
-	runNpmCommandInPackages(['test'], true);
+	runNpmCommandInPackages(["test"], true);
 }
 
 function runNpmStart() {
-	runNpmCommandInPackages(['start'], true);
+	runNpmCommandInPackages(["start"], true);
 }
 
 function runNpmBuild() {
-	runNpmCommandInPackages(['run', 'build'], true);
+	runNpmCommandInPackages(["run", "build"], true);
 }
 
 function runNpmAudit() {
-	runNpmCommandInPackages(['audit'], true);
+	runNpmCommandInPackages(["audit"], true);
 }
 
 function runNpmOutdated() {
-	runNpmCommandInPackages(['outdated'], true);
+	runNpmCommandInPackages(["outdated"], true);
 }
 
 function runNpmInit() {
-	runNpmCommandInPackages(['init'], true);
+	runNpmCommandInPackages(["init"], true);
 }
 
 function runNpmScript(): void {
-	runNpmCommandInPackages(['run-script'], false);
+	runNpmCommandInPackages(["run-script"], false);
 }
 
 function rerunLastScript(): void {
@@ -285,7 +352,11 @@ function rerunLastScript(): void {
  *    - with all script names (when there is no script name defined),
  *    - with scripts that match the name.
  */
-function commandDescriptionsInPackage(param: string[], packagePath: string, descriptions: ScriptCommandDescription[]) {
+function commandDescriptionsInPackage(
+	param: string[],
+	packagePath: string,
+	descriptions: ScriptCommandDescription[],
+) {
 	const absolutePath = packagePath;
 	const fileUri = Uri.file(absolutePath);
 	const workspaceFolder = workspace.getWorkspaceFolder(fileUri);
@@ -299,42 +370,46 @@ function commandDescriptionsInPackage(param: string[], packagePath: string, desc
 	const cmd = param[0];
 	const name = param[1];
 
-	if (cmd === 'run-script') {
+	if (cmd === "run-script") {
 		try {
-			const fileName = path.join(packagePath, 'package.json');
+			const fileName = path.join(packagePath, "package.json");
 			const contents = fs.readFileSync(fileName).toString();
 			const json = JSON.parse(contents);
 			if (json.scripts) {
 				const jsonScripts = json.scripts;
-				Object.keys(jsonScripts).forEach(key => {
+				Object.keys(jsonScripts).forEach((key) => {
 					if (!name || key === name) {
 						descriptions.push({
 							absolutePath: absolutePath,
 							relativePath: relativePath,
 							name: `${key}`,
-							cmd: `${cmd} ${jsonScripts[key]}`
+							cmd: `${cmd} ${jsonScripts[key]}`,
 						});
 					}
 				});
 			}
-		} catch (e) {
-		}
+		} catch (e) {}
 	} else {
 		descriptions.push({
 			absolutePath: absolutePath,
 			relativePath: relativePath,
 			name: `${cmd}`,
-			cmd: `npm ${cmd}`
+			cmd: `npm ${cmd}`,
 		});
 	}
 }
 
-function commandsDescriptions(command: string[], dirs: string[] | undefined): ScriptCommandDescription[] {
+function commandsDescriptions(
+	command: string[],
+	dirs: string[] | undefined,
+): ScriptCommandDescription[] {
 	if (!dirs) {
 		dirs = getAllIncludedDirectories();
 	}
 	const descriptions: ScriptCommandDescription[] = [];
-	dirs.forEach(dir => commandDescriptionsInPackage(command, dir, descriptions));
+	dirs.forEach((dir) =>
+		commandDescriptionsInPackage(command, dir, descriptions),
+	);
 	return descriptions;
 }
 
@@ -344,47 +419,57 @@ function showNpmOutput(): void {
 
 function terminateScript(): void {
 	if (useTerminal()) {
-		window.showInformationMessage('Killing is only supported when the setting "runInTerminal" is "false"');
+		window.showInformationMessage(
+			'Killing is only supported when the setting "runInTerminal" is "false"',
+		);
 	} else {
 		const items: ProcessItem[] = [];
 
 		runningProcesses.forEach((value) => {
-			items.push(new ProcessItem(value.cmd, `kill the process ${value.process.pid}`, value.process.pid));
+			items.push(
+				new ProcessItem(
+					value.cmd,
+					`kill the process ${value.process.pid}`,
+					value.process.pid,
+				),
+			);
 		});
 
 		window.showQuickPick(items).then((value) => {
 			if (value) {
-				outputChannel.appendLine('');
-				outputChannel.appendLine(`Killing process ${value.label} (pid: ${value.pid})`);
-				outputChannel.appendLine('');
-				kill(value.pid, 'SIGTERM');
+				outputChannel.appendLine("");
+				outputChannel.appendLine(
+					`Killing process ${value.label} (pid: ${value.pid})`,
+				);
+				outputChannel.appendLine("");
+				kill(value.pid, "SIGTERM");
 			}
 		});
 	}
 }
 
 function runCommandInOutputWindow(args: string[], cwd: string | undefined) {
-	const cmd = getNpmBin() + ' ' + args.join(' ');
+	const cmd = getNpmBin() + " " + args.join(" ");
 	const p = cp.exec(cmd, { cwd: cwd, env: process.env });
 
 	runningProcesses.set(p.pid, { process: p, cmd: cmd });
 
-	p.stderr.on('data', (data: string) => {
+	p.stderr.on("data", (data: string) => {
 		outputChannel.append(data);
 	});
-	p.stdout.on('data', (data: string) => {
+	p.stdout.on("data", (data: string) => {
 		outputChannel.append(data);
 	});
-	p.on('exit', (_code: number, signal: string) => {
+	p.on("exit", (_code: number, signal: string) => {
 		runningProcesses.delete(p.pid);
 
-		if (signal === 'SIGTERM') {
-			outputChannel.appendLine('Successfully killed process');
-			outputChannel.appendLine('-----------------------');
-			outputChannel.appendLine('');
+		if (signal === "SIGTERM") {
+			outputChannel.appendLine("Successfully killed process");
+			outputChannel.appendLine("-----------------------");
+			outputChannel.appendLine("");
 		} else {
-			outputChannel.appendLine('-----------------------');
-			outputChannel.appendLine('');
+			outputChannel.appendLine("-----------------------");
+			outputChannel.appendLine("");
 		}
 	});
 
@@ -395,28 +480,31 @@ function runCommandInTerminal(args: string[], cwd: string | undefined): void {
 	runInTerminal(getNpmBin(), args, { cwd: cwd, env: process.env });
 }
 
-function runCommandInIntegratedTerminal(args: string[], cwd: string | undefined): void {
+function runCommandInIntegratedTerminal(
+	args: string[],
+	cwd: string | undefined,
+): void {
 	const cmd_args = Array.from(args);
 
 	if (!terminal) {
-		terminal = window.createTerminal('npm');
+		terminal = window.createTerminal("npm");
 	}
 	terminal.show();
 	if (cwd) {
 		// Replace single backslash with double backslash.
-		const textCwd = cwd.replace(/\\/g, '\\\\');
-		terminal.sendText(['cd', `"${textCwd}"`].join(' '));
+		const textCwd = cwd.replace(/\\/g, "\\\\");
+		terminal.sendText(["cd", `"${textCwd}"`].join(" "));
 	}
 	cmd_args.splice(0, 0, getNpmBin());
-	terminal.sendText(cmd_args.join(' '));
+	terminal.sendText(cmd_args.join(" "));
 }
 
 function useTerminal() {
-	return workspace.getConfiguration('npm')['runInTerminal'];
+	return workspace.getConfiguration("npm")["runInTerminal"];
 }
 
 function runSilent() {
-	return workspace.getConfiguration('npm')['runSilent'];
+	return workspace.getConfiguration("npm")["runSilent"];
 }
 
 function getAllIncludedDirectories(): string[] {
@@ -429,7 +517,7 @@ function getAllIncludedDirectories(): string[] {
 	}
 
 	for (let i = 0; i < folders.length; i++) {
-		if (folders[i].uri.scheme === 'file') {
+		if (folders[i].uri.scheme === "file") {
 			const dirs = getIncludedDirectories(folders[i].uri);
 			allDirs.push(...dirs);
 		}
@@ -440,12 +528,20 @@ function getAllIncludedDirectories(): string[] {
 function getIncludedDirectories(workspaceRoot: Uri): string[] {
 	const dirs: string[] = [];
 
-	if (workspace.getConfiguration('npm', workspaceRoot)['useRootDirectory'] !== false) {
+	if (
+		workspace.getConfiguration("npm", workspaceRoot)["useRootDirectory"] !==
+		false
+	) {
 		dirs.push(workspaceRoot.fsPath);
 	}
 
-	if (workspace.getConfiguration('npm', workspaceRoot)['includeDirectories'].length > 0) {
-		for (const dir of workspace.getConfiguration('npm', workspaceRoot)['includeDirectories']) {
+	if (
+		workspace.getConfiguration("npm", workspaceRoot)["includeDirectories"]
+			.length > 0
+	) {
+		for (const dir of workspace.getConfiguration("npm", workspaceRoot)[
+			"includeDirectories"
+		]) {
 			dirs.push(path.join(workspaceRoot.fsPath, dir));
 		}
 	}
@@ -453,5 +549,5 @@ function getIncludedDirectories(workspaceRoot: Uri): string[] {
 }
 
 function getNpmBin() {
-	return workspace.getConfiguration('npm')['bin'] || 'npm';
+	return workspace.getConfiguration("npm")["bin"] || "npm";
 }

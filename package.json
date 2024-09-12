@@ -1,4 +1,38 @@
 {
+	"name": "vscode-npm-script",
+	"description": "npm support for VS Code",
+	"displayName": "npm",
+	"version": "0.3.29",
+	"publisher": "eg2",
+	"license": "MIT",
+	"icon": "npm_icon.png",
+	"engines": {
+		"vscode": "^1.66.0"
+	},
+	"capabilities": {
+		"virtualWorkspaces": {
+			"supported": false,
+			"description": "Npm scripts running is not possible in virtual workspaces."
+		},
+		"untrustedWorkspaces": {
+			"supported": false,
+			"description": "The extension requires workspace trust because it runs npm scripts from the workspace."
+		}
+	},
+	"homepage": "https://github.com/Microsoft/vscode-npm-scripts/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/vscode-npm-scripts.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Microsoft/vscode-npm-scripts/issues"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"multi-root ready"
+	],
 	"activationEvents": [
 		"onCommand:npm-script.showKeybindingsChangedWarning",
 		"onCommand:npm-script.install",
@@ -12,123 +46,99 @@
 		"onCommand:npm-script.outdated",
 		"onCommand:npm-script.init"
 	],
-	"capabilities": {
-		"untrustedWorkspaces": {
-			"description": "The extension requires workspace trust because it runs npm scripts from the workspace.",
-			"supported": false
-		},
-		"virtualWorkspaces": {
-			"description": "Npm scripts running is not possible in virtual workspaces.",
-			"supported": false
-		}
-	},
+	"main": "./dist/extension",
 	"contributes": {
 		"commands": [
 			{
-				"category": "npm",
 				"command": "npm-script.install",
-				"icon": "./assets/install.png",
-				"title": "Install Dependencies"
+				"title": "Install Dependencies",
+				"category": "npm",
+				"icon": "./assets/install.png"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.terminate-script",
-				"title": "Terminate Script"
+				"title": "Terminate Script",
+				"category": "npm"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.run",
-				"title": "Run Script"
+				"title": "Run Script",
+				"category": "npm"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.start",
-				"icon": "./assets/start.png",
-				"title": "Start"
+				"title": "Start",
+				"category": "npm",
+				"icon": "./assets/start.png"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.showOutput",
-				"title": "Show Output"
+				"title": "Show Output",
+				"category": "npm"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.rerun-last-script",
-				"title": "Rerun Last Script"
+				"title": "Rerun Last Script",
+				"category": "npm"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.test",
-				"icon": "./assets/test.png",
-				"title": "Run Test"
+				"title": "Run Test",
+				"category": "npm",
+				"icon": "./assets/test.png"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.build",
-				"icon": "./assets/build.png",
-				"title": "Run Build"
+				"title": "Run Build",
+				"category": "npm",
+				"icon": "./assets/build.png"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.audit",
-				"title": "Run Audit"
+				"title": "Run Audit",
+				"category": "npm"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.outdated",
-				"title": "Run Outdated"
+				"title": "Run Outdated",
+				"category": "npm"
 			},
 			{
-				"category": "npm",
 				"command": "npm-script.init",
-				"title": "Run Init"
+				"title": "Run Init",
+				"category": "npm"
 			}
 		],
-		"configuration": {
-			"properties": {
-				"npm.bin": {
-					"default": "npm",
-					"description": "npm bin name",
-					"type": "string"
-				},
-				"npm.enableTouchbar": {
-					"default": false,
-					"description": "Enable npm commands in the macOS touchbar.",
-					"scope": "resource",
-					"type": "boolean"
-				},
-				"npm.includeDirectories": {
-					"default": [],
-					"description": "Look for 'package.json' files in these directories",
-					"scope": "resource",
-					"type": "array"
-				},
-				"npm.keybindingsChangedWarningShown": {
-					"default": false,
-					"description": "Show a warning that the keybindings have changed.",
-					"scope": "application",
-					"type": "boolean"
-				},
-				"npm.oldKeybindings.enable": {
-					"default": false,
-					"description": "Enable the old cmd/ctrl R chording key bindings.",
-					"scope": "resource",
-					"type": "boolean"
-				},
-				"npm.runInTerminal": {
-					"default": true,
-					"description": "Run npm commands in a terminal, otherwise shows the output in the output panel",
-					"type": "boolean"
-				},
-				"npm.useRootDirectory": {
-					"default": true,
-					"description": "Look for 'package.json' in the root directory of the workspace",
-					"scope": "resource",
-					"type": "boolean"
+		"menus": {
+			"explorer/context": [
+				{
+					"when": "resourceFilename == 'package.json'",
+					"command": "npm-script.install",
+					"group": "navigation@+1"
 				}
-			},
-			"title": "npm Script Runner",
-			"type": "object"
+			],
+			"touchBar": [
+				{
+					"command": "npm-script.install",
+					"group": "navigation@+1",
+					"when": "config.npm.enableTouchbar"
+				},
+				{
+					"command": "npm-script.build",
+					"group": "navigation@+4",
+					"when": "config.npm.enableTouchbar"
+				},
+				{
+					"command": "npm-script.test",
+					"group": "navigation@+3",
+					"when": "config.npm.enableTouchbar"
+				},
+				{
+					"command": "npm-script.start",
+					"group": "navigation@+2",
+					"when": "config.npm.enableTouchbar"
+				}
+			]
 		},
 		"keybindings": [
 			{
@@ -192,54 +202,76 @@
 				"when": "!terminalFocus && !config.npm.oldKeybindings.enable"
 			}
 		],
-		"menus": {
-			"explorer/context": [
-				{
-					"command": "npm-script.install",
-					"group": "navigation@+1",
-					"when": "resourceFilename == 'package.json'"
+		"configuration": {
+			"type": "object",
+			"title": "npm Script Runner",
+			"properties": {
+				"npm.runInTerminal": {
+					"type": "boolean",
+					"default": true,
+					"description": "Run npm commands in a terminal, otherwise shows the output in the output panel"
+				},
+				"npm.includeDirectories": {
+					"type": "array",
+					"scope": "resource",
+					"default": [],
+					"description": "Look for 'package.json' files in these directories"
+				},
+				"npm.useRootDirectory": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "Look for 'package.json' in the root directory of the workspace"
+				},
+				"npm.bin": {
+					"type": "string",
+					"default": "npm",
+					"description": "npm bin name"
+				},
+				"npm.enableTouchbar": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": false,
+					"description": "Enable npm commands in the macOS touchbar."
+				},
+				"npm.oldKeybindings.enable": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": false,
+					"description": "Enable the old cmd/ctrl R chording key bindings."
+				},
+				"npm.keybindingsChangedWarningShown": {
+					"type": "boolean",
+					"scope": "application",
+					"default": false,
+					"description": "Show a warning that the keybindings have changed."
 				}
-			],
-			"touchBar": [
-				{
-					"command": "npm-script.install",
-					"group": "navigation@+1",
-					"when": "config.npm.enableTouchbar"
-				},
-				{
-					"command": "npm-script.build",
-					"group": "navigation@+4",
-					"when": "config.npm.enableTouchbar"
-				},
-				{
-					"command": "npm-script.test",
-					"group": "navigation@+3",
-					"when": "config.npm.enableTouchbar"
-				},
-				{
-					"command": "npm-script.start",
-					"group": "navigation@+2",
-					"when": "config.npm.enableTouchbar"
-				}
-			]
+			}
 		}
 	},
-	"dependencies": {
-		"jsonc-parser": "2.1.0",
-		"run-in-terminal": "0.0.2",
-		"tree-kill": "1.2.2"
-	},
-	"description": "npm support for VS Code",
-	"devDependencies": {
-		"@types/node": "7.0.43",
-		"ts-loader": "9.2.6"
-	},
-	"displayName": "npm",
-	"icon": "npm_icon.png",
-	"main": "./dist/extension",
-	"name": "vscode-npm-script",
 	"scripts": {
+		"vscode:prepublish": "webpack --mode production",
 		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch"
+		"webpack-dev": "webpack --mode development --watch",
+		"test": "npm run compile && node ./node_modules/vscode/bin/test",
+		"lint": "eslint -c .eslintrc.js --ext .ts src/*.ts"
+	},
+	"devDependencies": {
+		"@types/mocha": "^2.2.32",
+		"@types/node": "^7.0.43",
+		"@types/vscode": "^1.66.0",
+		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"@typescript-eslint/parser": "^2.18.0",
+		"eslint": "^8.0.1",
+		"ts-loader": "^9.2.6",
+		"typescript": "^4.4.4",
+		"webpack": "^5.58.2",
+		"webpack-cli": "^4.9.1",
+		"vscode-test": "^1.6.1"
+	},
+	"dependencies": {
+		"jsonc-parser": "^2.1.0",
+		"run-in-terminal": "^0.0.2",
+		"tree-kill": "^1.2.2"
 	}
 }

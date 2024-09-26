@@ -1,11 +1,26 @@
 {
-	"name": "vscode-npm-script",
-	"displayName": "npm",
-	"description": "npm support for VS Code",
-	"main": "./dist/extension",
-	"scripts": {
-		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch"
+	"activationEvents": [
+		"onCommand:npm-script.showKeybindingsChangedWarning",
+		"onCommand:npm-script.install",
+		"onCommand:npm-script.run",
+		"onCommand:npm-script.showOutput",
+		"onCommand:npm-script.rerun-last-script",
+		"onCommand:npm-script.terminate-script",
+		"onCommand:npm-script.test",
+		"onCommand:npm-script.start",
+		"onCommand:npm-script.audit",
+		"onCommand:npm-script.outdated",
+		"onCommand:npm-script.init"
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"description": "The extension requires workspace trust because it runs npm scripts from the workspace.",
+			"supported": false
+		},
+		"virtualWorkspaces": {
+			"description": "Npm scripts running is not possible in virtual workspaces.",
+			"supported": false
+		}
 	},
 	"contributes": {
 		"commands": [
@@ -209,37 +224,22 @@
 			]
 		}
 	},
-	"activationEvents": [
-		"onCommand:npm-script.showKeybindingsChangedWarning",
-		"onCommand:npm-script.install",
-		"onCommand:npm-script.run",
-		"onCommand:npm-script.showOutput",
-		"onCommand:npm-script.rerun-last-script",
-		"onCommand:npm-script.terminate-script",
-		"onCommand:npm-script.test",
-		"onCommand:npm-script.start",
-		"onCommand:npm-script.audit",
-		"onCommand:npm-script.outdated",
-		"onCommand:npm-script.init"
-	],
 	"dependencies": {
 		"jsonc-parser": "3.3.1",
 		"run-in-terminal": "0.0.3",
 		"tree-kill": "1.2.2"
 	},
+	"description": "npm support for VS Code",
 	"devDependencies": {
 		"@types/node": "22.6.0",
 		"ts-loader": "9.5.1"
 	},
+	"displayName": "npm",
 	"icon": "npm_icon.png",
-	"capabilities": {
-		"untrustedWorkspaces": {
-			"description": "The extension requires workspace trust because it runs npm scripts from the workspace.",
-			"supported": false
-		},
-		"virtualWorkspaces": {
-			"description": "Npm scripts running is not possible in virtual workspaces.",
-			"supported": false
-		}
+	"main": "./dist/extension",
+	"name": "vscode-npm-script",
+	"scripts": {
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch"
 	}
 }

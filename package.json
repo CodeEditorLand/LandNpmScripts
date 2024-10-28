@@ -231,7 +231,7 @@
 	},
 	"description": "npm support for VS Code",
 	"devDependencies": {
-		"@types/node": "22.7.9",
+		"@types/node": "22.8.1",
 		"ts-loader": "9.5.1"
 	},
 	"displayName": "npm",

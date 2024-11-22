@@ -50,7 +50,9 @@ interface CommandArgument {
 const runningProcesses: Map<number, Process> = new Map();
 
 let outputChannel: OutputChannel;
+
 let terminal: Terminal | null = null;
+
 let lastScript: Script | null = null;
 
 export function activate(context: ExtensionContext) {
@@ -86,11 +88,13 @@ function registerCommands(context: ExtensionContext) {
 			return;
 		}
 		const learnMore = "Learn More";
+
 		const result = await window.showInformationMessage(
 			"The key bindings of the 'npm-scripts' extension have changed!",
 			{ "modal": true },
 			learnMore,
 		);
+
 		if (result === learnMore) {
 			env.openExternal(
 				Uri.parse(
@@ -197,6 +201,7 @@ function pickScriptToExecute(
 	alwaysRunInputWindow = false,
 ) {
 	const scriptList: Script[] = [];
+
 	const isScriptCommand = command[0] === "run-script";
 
 	if (allowAll && descriptions.length > 1) {
@@ -204,11 +209,13 @@ function pickScriptToExecute(
 	}
 	for (const s of descriptions) {
 		let label = s.name;
+
 		if (s.relativePath) {
 			label = `${s.relativePath} - ${label}`;
 		}
 		if (isMultiRoot()) {
 			const root = workspace.getWorkspaceFolder(Uri.file(s.absolutePath));
+
 			if (root) {
 				label = `${root.name}: ${label}`;
 			}
@@ -226,6 +233,7 @@ function pickScriptToExecute(
 				}
 				// Create copy of command to ensure that we always get the correct command when the script is rerun.
 				const cmd = Array.from(command);
+
 				if (isScriptCommand) {
 					lastScript = this;
 					//Add script name to command array
@@ -238,6 +246,7 @@ function pickScriptToExecute(
 
 	if (scriptList.length === 1) {
 		scriptList[0].execute();
+
 		return;
 	} else if (scriptList.length === 0) {
 		if (isScriptCommand) {
@@ -272,8 +281,10 @@ function runNpmCommandInPackages(
 	dirs?: string[],
 ) {
 	const descriptions = commandsDescriptions(command, dirs);
+
 	if (descriptions.length === 0) {
 		window.showErrorMessage("No scripts found.", { modal: true });
+
 		return;
 	}
 	pickScriptToExecute(descriptions, command, allowAll, alwaysRunInputWindow);
@@ -356,23 +367,32 @@ function commandDescriptionsInPackage(
 	descriptions: ScriptCommandDescription[],
 ) {
 	const absolutePath = packagePath;
+
 	const fileUri = Uri.file(absolutePath);
+
 	const workspaceFolder = workspace.getWorkspaceFolder(fileUri);
+
 	let rootUri: Uri | undefined = undefined;
+
 	let relativePath: string | undefined = undefined;
+
 	if (workspaceFolder) {
 		rootUri = workspaceFolder.uri;
 		relativePath = absolutePath.substring(rootUri.fsPath.length + 1);
 	}
 
 	const cmd = param[0];
+
 	const name = param[1];
 
 	if (cmd === "run-script") {
 		try {
 			const fileName = path.join(packagePath, "package.json");
+
 			const contents = fs.readFileSync(fileName).toString();
+
 			const json = JSON.parse(contents);
+
 			if (json.scripts) {
 				const jsonScripts = json.scripts;
 				Object.keys(jsonScripts).forEach((key) => {
@@ -408,6 +428,7 @@ function commandsDescriptions(
 	dirs.forEach((dir) =>
 		commandDescriptionsInPackage(command, dir, descriptions),
 	);
+
 	return descriptions;
 }
 
@@ -448,6 +469,7 @@ function terminateScript(): void {
 
 function runCommandInOutputWindow(args: string[], cwd: string | undefined) {
 	const cmd = getNpmBin() + " " + args.join(" ");
+
 	const p = cp.exec(cmd, { cwd: cwd, env: process.env });
 
 	runningProcesses.set(p.pid, { process: p, cmd: cmd });
@@ -488,6 +510,7 @@ function runCommandInIntegratedTerminal(
 		terminal = window.createTerminal("npm");
 	}
 	terminal.show();
+
 	if (cwd) {
 		// Replace single backslash with double backslash.
 		const textCwd = cwd.replace(/\\/g, "\\\\");

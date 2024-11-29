@@ -19,12 +19,15 @@ import {
 
 interface Script extends QuickPickItem {
 	scriptName: string;
+
 	cwd: string | undefined;
+
 	execute(): void;
 }
 
 interface Process {
 	process: cp.ChildProcess;
+
 	cmd: string;
 }
 
@@ -38,8 +41,10 @@ class ProcessItem implements QuickPickItem {
 
 interface ScriptCommandDescription {
 	absolutePath: string;
+
 	relativePath: string | undefined; // path relative to workspace root, if there is a root
 	name: string;
+
 	cmd: string;
 }
 
@@ -59,6 +64,7 @@ export function activate(context: ExtensionContext) {
 	registerCommands(context);
 
 	outputChannel = window.createOutputChannel("npm");
+
 	context.subscriptions.push(outputChannel);
 
 	window.onDidCloseTerminal((closedTerminal) => {
@@ -87,6 +93,7 @@ function registerCommands(context: ExtensionContext) {
 		) {
 			return;
 		}
+
 		const learnMore = "Learn More";
 
 		const result = await window.showInformationMessage(
@@ -102,6 +109,7 @@ function registerCommands(context: ExtensionContext) {
 				),
 			);
 		}
+
 		await configuration.update(
 			"npm.keybindingsChangedWarningShown",
 			true,
@@ -150,6 +158,7 @@ function runNpmCommand(
 	if (runSilent()) {
 		args.push("--silent");
 	}
+
 	workspace.saveAll().then(() => {
 		if (useTerminal() && !alwaysRunInputWindow) {
 			if (typeof window.createTerminal === "function") {
@@ -159,6 +168,7 @@ function runNpmCommand(
 			}
 		} else {
 			outputChannel.clear();
+
 			runCommandInOutputWindow(args, cwd);
 		}
 	});
@@ -191,6 +201,7 @@ function isMultiRoot(): boolean {
 	if (workspace.workspaceFolders) {
 		return workspace.workspaceFolders.length > 1;
 	}
+
 	return false;
 }
 
@@ -207,12 +218,14 @@ function pickScriptToExecute(
 	if (allowAll && descriptions.length > 1) {
 		scriptList.push(createAllCommand(scriptList, isScriptCommand));
 	}
+
 	for (const s of descriptions) {
 		let label = s.name;
 
 		if (s.relativePath) {
 			label = `${s.relativePath} - ${label}`;
 		}
+
 		if (isMultiRoot()) {
 			const root = workspace.getWorkspaceFolder(Uri.file(s.absolutePath));
 
@@ -220,6 +233,7 @@ function pickScriptToExecute(
 				label = `${root.name}: ${label}`;
 			}
 		}
+
 		scriptList.push({
 			label: label,
 			description: s.cmd,
@@ -239,6 +253,7 @@ function pickScriptToExecute(
 					//Add script name to command array
 					cmd.push(script);
 				}
+
 				runNpmCommand(cmd, this.cwd, alwaysRunInputWindow);
 			},
 		});
@@ -258,8 +273,10 @@ function pickScriptToExecute(
 				`Failed to find handler for "${command[0]}" command`,
 			);
 		}
+
 		return;
 	}
+
 	window.showQuickPick(scriptList).then((script) => {
 		if (script) {
 			script.execute();
@@ -287,6 +304,7 @@ function runNpmCommandInPackages(
 
 		return;
 	}
+
 	pickScriptToExecute(descriptions, command, allowAll, alwaysRunInputWindow);
 }
 
@@ -295,6 +313,7 @@ function runNpmCommandInPackages(
  */
 function runNpmCommandWithArguments(cmd: string, args: string[]) {
 	const [dir, ...args1] = args;
+
 	runNpmCommand([cmd, ...args1], dir);
 }
 
@@ -306,6 +325,7 @@ function runNpmInstall(arg: CommandArgument) {
 	} else {
 		dirs = getAllIncludedDirectories();
 	}
+
 	runNpmCommandInPackages(["install"], true, false, dirs);
 }
 
@@ -378,6 +398,7 @@ function commandDescriptionsInPackage(
 
 	if (workspaceFolder) {
 		rootUri = workspaceFolder.uri;
+
 		relativePath = absolutePath.substring(rootUri.fsPath.length + 1);
 	}
 
@@ -395,6 +416,7 @@ function commandDescriptionsInPackage(
 
 			if (json.scripts) {
 				const jsonScripts = json.scripts;
+
 				Object.keys(jsonScripts).forEach((key) => {
 					if (!name || key === name) {
 						descriptions.push({
@@ -424,7 +446,9 @@ function commandsDescriptions(
 	if (!dirs) {
 		dirs = getAllIncludedDirectories();
 	}
+
 	const descriptions: ScriptCommandDescription[] = [];
+
 	dirs.forEach((dir) =>
 		commandDescriptionsInPackage(command, dir, descriptions),
 	);
@@ -457,10 +481,13 @@ function terminateScript(): void {
 		window.showQuickPick(items).then((value) => {
 			if (value) {
 				outputChannel.appendLine("");
+
 				outputChannel.appendLine(
 					`Killing process ${value.label} (pid: ${value.pid})`,
 				);
+
 				outputChannel.appendLine("");
+
 				kill(value.pid, "SIGTERM");
 			}
 		});
@@ -477,18 +504,23 @@ function runCommandInOutputWindow(args: string[], cwd: string | undefined) {
 	p.stderr.on("data", (data: string) => {
 		outputChannel.append(data);
 	});
+
 	p.stdout.on("data", (data: string) => {
 		outputChannel.append(data);
 	});
+
 	p.on("exit", (_code: number, signal: string) => {
 		runningProcesses.delete(p.pid);
 
 		if (signal === "SIGTERM") {
 			outputChannel.appendLine("Successfully killed process");
+
 			outputChannel.appendLine("-----------------------");
+
 			outputChannel.appendLine("");
 		} else {
 			outputChannel.appendLine("-----------------------");
+
 			outputChannel.appendLine("");
 		}
 	});
@@ -509,14 +541,18 @@ function runCommandInIntegratedTerminal(
 	if (!terminal) {
 		terminal = window.createTerminal("npm");
 	}
+
 	terminal.show();
 
 	if (cwd) {
 		// Replace single backslash with double backslash.
 		const textCwd = cwd.replace(/\\/g, "\\\\");
+
 		terminal.sendText(["cd", `"${textCwd}"`].join(" "));
 	}
+
 	cmd_args.splice(0, 0, getNpmBin());
+
 	terminal.sendText(cmd_args.join(" "));
 }
 
@@ -540,9 +576,11 @@ function getAllIncludedDirectories(): string[] {
 	for (let i = 0; i < folders.length; i++) {
 		if (folders[i].uri.scheme === "file") {
 			const dirs = getIncludedDirectories(folders[i].uri);
+
 			allDirs.push(...dirs);
 		}
 	}
+
 	return allDirs;
 }
 
@@ -566,6 +604,7 @@ function getIncludedDirectories(workspaceRoot: Uri): string[] {
 			dirs.push(path.join(workspaceRoot.fsPath, dir));
 		}
 	}
+
 	return dirs;
 }
 

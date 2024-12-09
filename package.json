@@ -237,7 +237,7 @@
 	"displayName": "npm",
 	"icon": "npm_icon.png",
 	"main": "./dist/extension",
-	"name": "vscode-npm-script",
+	"name": "@codeeditorland/npm-script",
 	"scripts": {
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch"

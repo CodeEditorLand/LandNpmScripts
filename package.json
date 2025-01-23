@@ -228,7 +228,7 @@
 		"tree-kill": "1.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "22.10.9",
+		"@types/node": "22.10.10",
 		"ts-loader": "9.5.2"
 	},
 	"icon": "npm_icon.png",
